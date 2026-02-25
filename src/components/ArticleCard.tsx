@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { SourceBadge } from "./SourceBadge";
 import { BookmarkButton } from "./BookmarkButton";
 import { timeAgo } from "@/utils/date";
@@ -14,11 +17,18 @@ const CATEGORY_DOT: Record<string, string> = {
 };
 
 export function ArticleCard({ article }: { article: Article }) {
+  const searchParams = useSearchParams();
   const isUnread = !article.is_read;
   const description = article.summary || article.description || "";
 
+  // Preserve current filters in the article link
+  const backParams = searchParams.toString();
+  const articleHref = backParams
+    ? `/article/${article.id}?${backParams}`
+    : `/article/${article.id}`;
+
   return (
-    <Link href={`/article/${article.id}`}>
+    <Link href={articleHref}>
       <div
         className={`bg-white rounded-xl border p-4 hover:shadow-md transition-all cursor-pointer ${
           isUnread ? "border-gray-200" : "border-gray-100 opacity-75"

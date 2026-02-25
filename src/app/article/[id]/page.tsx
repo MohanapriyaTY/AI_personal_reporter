@@ -7,10 +7,12 @@ import { notFound } from "next/navigation";
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function ArticleDetailPage({ params }: Props) {
+export default async function ArticleDetailPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const resolvedSearchParams = await searchParams;
   const article = getArticleById(parseInt(id));
 
   if (!article) {
@@ -20,12 +22,20 @@ export default async function ArticleDetailPage({ params }: Props) {
   // Mark as read
   markAsRead(article.id, true);
 
+  // Build "Back to feed" URL preserving filters
+  const backParams = new URLSearchParams();
+  if (resolvedSearchParams.category) backParams.set("category", String(resolvedSearchParams.category));
+  if (resolvedSearchParams.date) backParams.set("date", String(resolvedSearchParams.date));
+  if (resolvedSearchParams.search) backParams.set("search", String(resolvedSearchParams.search));
+  const backQuery = backParams.toString();
+  const backHref = backQuery ? `/?${backQuery}` : "/";
+
   const content = article.summary || article.description || "";
 
   return (
     <div className="max-w-3xl mx-auto">
       <Link
-        href="/"
+        href={backHref}
         className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

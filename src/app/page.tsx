@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ArticleList } from "@/components/ArticleList";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { DatePicker } from "@/components/DatePicker";
@@ -8,13 +9,26 @@ import { SearchBar } from "@/components/SearchBar";
 import type { Article } from "@/lib/types";
 
 export default function DashboardPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [total, setTotal] = useState(0);
-  const [category, setCategory] = useState("all");
-  const [date, setDate] = useState("");
-  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState(searchParams.get("category") || "all");
+  const [date, setDate] = useState(searchParams.get("date") || "");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [loading, setLoading] = useState(true);
+
+  // Sync filters to URL so "Back to feed" can restore them
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (category !== "all") params.set("category", category);
+    if (date) params.set("date", date);
+    if (search) params.set("search", search);
+    const qs = params.toString();
+    router.replace(qs ? `/?${qs}` : "/", { scroll: false });
+  }, [category, date, search, router]);
 
   const fetchArticles = useCallback(async () => {
     const params = new URLSearchParams();
