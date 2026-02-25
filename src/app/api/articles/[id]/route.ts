@@ -6,7 +6,13 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const article = getArticleById(parseInt(id));
+  const articleId = parseInt(id, 10);
+
+  if (isNaN(articleId) || articleId < 1) {
+    return NextResponse.json({ error: "Invalid article ID" }, { status: 400 });
+  }
+
+  const article = getArticleById(articleId);
   if (!article) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -18,16 +24,30 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const body = await request.json();
-  const articleId = parseInt(id);
+  const articleId = parseInt(id, 10);
 
-  if (body.is_read !== undefined) {
+  if (isNaN(articleId) || articleId < 1) {
+    return NextResponse.json({ error: "Invalid article ID" }, { status: 400 });
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  // Only allow known fields
+  if (typeof body.is_read === "boolean") {
     markAsRead(articleId, body.is_read);
   }
-  if (body.is_bookmarked !== undefined) {
+  if (typeof body.is_bookmarked === "boolean") {
     toggleBookmark(articleId, body.is_bookmarked);
   }
 
   const updated = getArticleById(articleId);
+  if (!updated) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   return NextResponse.json(updated);
 }
