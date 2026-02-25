@@ -33,21 +33,22 @@ export default async function ArticleDetailPage({ params, searchParams }: Props)
   const content = article.summary || article.description || "";
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto animate-fade-in-up">
       <Link
         href={backHref}
-        className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-900 mb-8 transition-colors group"
       >
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
         Back to feed
       </Link>
 
       <article>
-        <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <div className="flex items-center gap-3 mb-5 flex-wrap">
           <SourceBadge source={article.source_name} />
-          <span className="text-sm text-gray-500">{article.category}</span>
+          <span className="text-sm text-gray-400">{article.category}</span>
+          <span className="text-sm text-gray-300">•</span>
           <span className="text-sm text-gray-400">
             {formatDate(article.published_at)}
           </span>
@@ -58,44 +59,56 @@ export default async function ArticleDetailPage({ params, searchParams }: Props)
           />
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-4 leading-snug">
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-5 leading-tight tracking-tight">
           {article.title}
         </h1>
 
         {article.author && (
-          <p className="text-sm text-gray-500 mb-6">By {article.author}</p>
+          <p className="text-sm text-gray-400 mb-8">
+            By <span className="text-gray-600 font-medium">{article.author}</span>
+          </p>
         )}
 
         {content && (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <div className="bg-white rounded-2xl border border-gray-200/80 p-8 mb-8 shadow-sm">
             {article.summary && (
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                  AI Summary
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg ring-1 ring-inset ring-blue-600/10">
+                  ✨ AI Summary
                 </span>
               </div>
             )}
-            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+            <p className="text-gray-700 leading-[1.8] text-[15px]">
               {content}
             </p>
           </div>
         )}
 
         {article.score !== null && (
-          <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
-            <span>{article.score} points</span>
+          <div className="flex items-center gap-4 text-sm text-gray-400 mb-8">
+            <span className="flex items-center gap-1.5">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+              </svg>
+              {article.score} points
+            </span>
             {article.comment_count !== null && (
-              <span>{article.comment_count} comments</span>
+              <span className="flex items-center gap-1.5">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                {article.comment_count} comments
+              </span>
             )}
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-4">
           <a
             href={article.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-medium rounded-xl transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-500/40"
           >
             Read Original Article
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -108,7 +121,7 @@ export default async function ArticleDetailPage({ params, searchParams }: Props)
             </svg>
           </a>
 
-          <div className="text-xs text-gray-400 self-center">
+          <div className="text-xs text-gray-300 self-center">
             Source: {article.source_name} via {article.source_type}
           </div>
         </div>

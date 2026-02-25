@@ -57,17 +57,39 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-1">
+      <div className="mb-8">
+        <h2 className="text-3xl font-extrabold text-gray-900 mb-1 tracking-tight">
           Today&apos;s AI &amp; Tech Updates
         </h2>
         <p className="text-sm text-gray-500">
-          {total} articles from {Object.keys(counts).length} categories
-          {date && ` on ${date}`}
+          <span className="font-semibold text-gray-700">{total}</span> articles from{" "}
+          <span className="font-semibold text-gray-700">{Object.keys(counts).length}</span> categories
+          {date && (
+            <span className="ml-1 inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md text-xs font-medium">
+              📅 {date}
+              <button
+                onClick={() => setDate("")}
+                className="ml-0.5 hover:text-blue-900"
+              >
+                ✕
+              </button>
+            </span>
+          )}
+          {search && (
+            <span className="ml-1 inline-flex items-center gap-1 px-2 py-0.5 bg-violet-50 text-violet-700 rounded-md text-xs font-medium">
+              🔍 &quot;{search}&quot;
+              <button
+                onClick={() => setSearch("")}
+                className="ml-0.5 hover:text-violet-900"
+              >
+                ✕
+              </button>
+            </span>
+          )}
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="flex-1">
           <SearchBar value={search} onChange={setSearch} />
         </div>

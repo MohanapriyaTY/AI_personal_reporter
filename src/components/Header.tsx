@@ -13,9 +13,13 @@ export function Header() {
     try {
       const res = await fetch("/api/fetch", { method: "POST" });
       const data = await res.json();
-      setFetchResult(`+${data.fetched} new articles`);
+      if (data.error) {
+        setFetchResult(data.error);
+      } else {
+        setFetchResult(`+${data.fetched} new articles`);
+      }
       setTimeout(() => setFetchResult(null), 5000);
-      window.location.reload();
+      if (!data.error) window.location.reload();
     } catch {
       setFetchResult("Fetch failed");
     } finally {
@@ -24,31 +28,42 @@ export function Header() {
   }
 
   return (
-    <header className="bg-gray-900 text-white border-b border-gray-800 sticky top-0 z-50">
+    <header className="glass bg-gray-900/95 text-white border-b border-gray-800/50 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-sm font-bold">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-shadow">
             AI
           </div>
-          <h1 className="text-lg font-semibold">Tech Reporter</h1>
+          <div>
+            <h1 className="text-lg font-bold tracking-tight">Tech Reporter</h1>
+          </div>
         </Link>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {fetchResult && (
-            <span className="text-sm text-green-400">{fetchResult}</span>
+            <span className={`text-sm px-3 py-1 rounded-full animate-fade-in-up ${
+              fetchResult.includes("failed") || fetchResult.includes("Too many")
+                ? "text-red-300 bg-red-500/10"
+                : "text-emerald-300 bg-emerald-500/10"
+            }`}>
+              {fetchResult}
+            </span>
           )}
 
           <Link
             href="/bookmarks"
-            className="text-sm text-gray-300 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-all"
           >
-            Bookmarks
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            <span className="hidden sm:inline">Bookmarks</span>
           </Link>
 
           <button
             onClick={handleFetch}
             disabled={fetching}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-wait text-sm font-medium rounded-lg transition-colors"
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:from-blue-800 disabled:to-blue-800 disabled:cursor-wait text-sm font-medium rounded-lg transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-500/40 disabled:shadow-none"
           >
             {fetching ? (
               <span className="flex items-center gap-2">
@@ -74,7 +89,12 @@ export function Header() {
                 Fetching...
               </span>
             ) : (
-              "Fetch New"
+              <span className="flex items-center gap-1.5">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Fetch New
+              </span>
             )}
           </button>
         </div>
